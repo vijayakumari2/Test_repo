@@ -8,31 +8,27 @@ const parseZapReport = (filePath) => {
 
     const vulnerabilities = [];
 
-    // Find the alerts table
-    $('table.alerts tr').each((index, element) => {
-        // Skip the header row
-        if (index === 0) return;
+    // Loop through each vulnerability in the report
+    $('table.results').each((index, table) => {
+        const severity = $(table).find('th').first().text().trim(); // Extract severity
+        const name = $(table).find('th').eq(1).text().trim(); // Vulnerability name
 
-        // Extract the data
-        const name = $(element).find('td a').text().trim(); // Name of the vulnerability
-        const severityClass = $(element).find('td').eq(1).attr('class'); // Severity class
-        const severityText = $(element).find('td').eq(1).text().trim(); // Severity text
-        const instances = $(element).find('td').eq(2).text().trim(); // Number of instances
+        // Extract URLs
+        const urls = [];
+        $(table).find('tr:contains("URL") td a').each((_, urlElement) => {
+            urls.push($(urlElement).attr('href')); // Collect URLs
+        });
 
-        // Parse severity from class or text
-        let severity = '';
-        if (severityClass.includes('risk-3')) severity = 'High';
-        else if (severityClass.includes('risk-2')) severity = 'Medium';
-        else if (severityClass.includes('risk-1')) severity = 'Low';
-        else if (severityClass.includes('risk-0')) severity = 'Informational';
+        // Extract solution
+        const solution = $(table).find('tr:contains("Solution") td').last().text().trim();
 
-        // Only include High or Medium severity vulnerabilities
+       // Only include High or Medium severity vulnerabilities
         if (severity === 'High' || severity === 'Medium') {
             vulnerabilities.push({
                 name,
                 severity,
-                severityText,
-                instances: parseInt(instances, 10),
+                urls,
+                solution,
             });
         }
     });

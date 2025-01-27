@@ -1,11 +1,11 @@
 const fs = require('fs');
 const axios = require('axios');
-require('dotenv').config(); // Add this line
+require('dotenv').config(); // Load environment variables from .env file
 
 // GitHub repository details
-const GITHUB_OWNER = 'process.env.GITHUB_OWNER';
-const GITHUB_REPO = 'process.env.GITHUB_REPO';
-const GITHUB_TOKEN = 'process.env.GITHUB_TOKEN'; 
+const GITHUB_OWNER = process.env.GITHUB_OWNER; // Use environment variables correctly
+const GITHUB_REPO = process.env.GITHUB_REPO;
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
 // GitHub API URL
 const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/issues`;
@@ -21,7 +21,7 @@ const createGitHubIssue = async (title, body) => {
       },
       {
         headers: {
-          Authorization: `token ${GITHUB_TOKEN}`, // Authenticate with PAT
+          Authorization: `token ${GITHUB_TOKEN}`, // Authenticate with Personal Access Token
           Accept: 'application/vnd.github.v3+json',
         },
       }
@@ -39,15 +39,17 @@ const createIssuesFromVulnerabilities = () => {
 
   vulnerabilities.forEach((vulnerability) => {
     const title = `${vulnerability.severity} Vulnerability: ${vulnerability.name}`;
+    const urls = vulnerability.urls.map((url) => `- ${url}`).join('\n');
     const body = `
 ### Vulnerability Details:
 - **Name:** ${vulnerability.name}
 - **Severity:** ${vulnerability.severity}
-- **Severity Text:** ${vulnerability.severityText}
-- **Number of Instances:** ${vulnerability.instances}
+
+### Affected URLs:
+${urls}
 
 ### Recommended Action:
-Please investigate and address this vulnerability.
+${vulnerability.solution}
 
 ---
 
