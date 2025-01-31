@@ -19,7 +19,7 @@ jobs:
         node generate-issues.js
       env:
         GITHUB_TOKEN: ${{ secrets.TOKEN }}
-        GITHUB_OWNER: ${{ github.repository_owner }}
-        GITHUB_REPO: ${{ github.repository }}
+        GITHUB_OWNER: ${{ secrets.repository_owner }}
+        GITHUB_REPO: ${{ secrets.repository }}
         GITHUB_RUN_NAME: ${{ github.event_name }}-${{ github.run_number }}  
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
